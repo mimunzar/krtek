@@ -5,7 +5,7 @@
 (defun krtek-str-join (separator seq)
   (mapconcat 'identity seq separator))
 
-(defun krtek-send-string-to--panel (s krtek-socket krtek-panel)
+(defun krtek-send-string-to-panel (s krtek-socket krtek-panel)
   (with-temp-file krtek-buffer-file
     (insert s))
   (shell-command (krtek-str-join " " (list "tmux -L" krtek-socket "load-buffer" krtek-buffer-file)))
@@ -19,7 +19,7 @@
     (setq krtek-socket (read-string "tmux krtek-socket name or absolute path: " "default")))
   (unless krtek-panel
     (setq krtek-panel (read-string "tmux target pane: " "{last}")))
-  (krtek-send-string-to--panel (krtek-append-newline-if-missing s) krtek-socket krtek-panel))
+  (krtek-send-string-to-panel (krtek-append-newline-if-missing s) krtek-socket krtek-panel))
 
 (defun krtek-send ()
   (interactive)

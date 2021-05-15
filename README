@@ -1,0 +1,9 @@
+terminal-slime
+--------------
+
+Is the port of vim-slime into Emacs. It allows to send a text from Emacs to Tmux
+and GNU  Screen panels. It is  especially handy when sending  commands to remote
+terminals with a lot of lag. It can also be used to send text to REPL.
+
+When using GNU  Screen you can set msgwait  to 0 in ".screenrc" to  not wait for
+messages to disappear before sending the text.

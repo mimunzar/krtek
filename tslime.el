@@ -1,10 +1,13 @@
 (defvar tslime-multiplexer 'tmux)
-(defvar tslime-panel nil)
-(defvar tslime-buffer (make-temp-file "tslime"))
-(defvar tslime-screen-session nil)
+(defvar tslime-screen-configuration nil)
+(defvar tslime-tmux-configuration nil)
 
 (defun tslime-str-join (separator seq)
   (mapconcat 'identity seq separator))
+
+(defun tslime-re-matches (re s)
+  (let ((start (string-match re s)))
+    (when start (substring s start (match-end 0)))))
 
 (defun tslime-append-newline-if-missing (s)
   (replace-regexp-in-string "\n\n$" "\n" (concat s "\n")))
@@ -19,23 +22,38 @@
     (tslime-paste-buffer-to-tmux-panel tslime-buffer panel 'shell-command)))
 
 (defun tslime-send-string-tmux (s)
+  (unless tslime-buffer
+    (setq tslime-buffer (make-temp-file "tslime")))
   (unless tslime-panel
     (setq tslime-panel (read-string "tmux target panel: " "{last}")))
   (tslime-send-string-to-tmux-panel s tslime-panel))
 
-(defun tslime-paste-buffer-to-screen-panel (file panel fn-shell)
-  (funcall fn-shell (tslime-str-join " " (list "screen -X eval 'readreg p" (concat file "'"))))
-  (funcall fn-shell (tslime-str-join " " (list "screen -p" panel "-X paste p"))))
+(defun tslime-paste-buffer-to-screen-panel (fn-shell buffer session window)
+  (funcall fn-shell (tslime-str-join " " (list "screen -S" session "-X eval" (concat "'readreg p " buffer "'"))))
+  (funcall fn-shell (tslime-str-join " " (list "screen -S" session "-p" window "-X paste p"))))
 
-(defun tslime-send-string-to-screen-panel (s panel)
+(defun tslime-send-string-to-screen-panel (s conf)
   (let ((s (tslime-append-newline-if-missing s)))
-    (with-temp-file tslime-buffer (insert s))
-    (tslime-paste-buffer-to-tmux-panel tslime-buffer panel 'shell-command)))
+    (with-temp-file (cdr (assoc 'buffer conf)) (insert s))
+    (apply 'tslime-paste-buffer-to-screen-panel (cons 'shell-command (mapcar 'cdr conf)))))
+
+(defun tslime-parse-screen-session-list (s)
+  (mapcan (lambda (x) (unless (null x) (list x)))
+          (mapcar (lambda (x) (tslime-re-matches "[0-9]+\\.[^ \t]+\\.[^ \t]+" x)) (split-string s "\n"))))
+
+(defun tslime-prompt-for-screen-session ()
+  (let ((sessions (tslime-parse-screen-session-list (shell-command-to-string "screen -ls"))))
+    (if sessions (completing-read "Choose session: " sessions) (user-error "No screen session found"))))
+
+(defun tslime-prompt-for-screen-configuration ()
+  `((buffer  . ,(make-temp-file "tslime"))
+    (session . ,(tslime-prompt-for-screen-session))
+    (window  . ,(read-string "Type window id: "))))
 
 (defun tslime-send-string-screen (s)
-  (unless tslime-panel
-    (setq tslime-panel (read-string "screen target panel: " "1")))
-  (tslime-send-string-to-screen-panel s tslime-panel))
+  (unless tslime-screen-configuration
+    (setq tslime-screen-configuration (tslime-prompt-for-screen-configuration)))
+  (tslime-send-string-to-screen-panel s tslime-screen-configuration))
 
 (defun tslime-send-string-dispatch (s)
   (pcase tslime-multiplexer
@@ -56,9 +74,10 @@
     (deactivate-mark)
     (goto-char pos)))
 
-(defun tslime-reset-panel ()
+(defun tslime-reset ()
   (interactive)
-  (setq tslime-panel nil))
+  (setq tslime-screen-configuration nil)
+  (setq tslime-tmux-configuration nil))
 
 (global-set-key (kbd "C-c C-c") 'tslime-send)
 

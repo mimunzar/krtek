@@ -74,11 +74,13 @@
     (deactivate-mark)
     (goto-char pos)))
 
-(defun tslime-reset ()
+(defun tslime-forget-send ()
   (interactive)
   (setq tslime-screen-configuration nil)
-  (setq tslime-tmux-configuration nil))
+  (setq tslime-tmux-configuration nil)
+  (tslime-send))
 
 (global-set-key (kbd "C-c C-c") 'tslime-send)
+(global-set-key (kbd "C-c C-v") 'tslime-forget-send)
 
 (provide 'tslime)

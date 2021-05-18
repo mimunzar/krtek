@@ -12,25 +12,27 @@
 (defun tslime-append-newline-if-missing (s)
   (replace-regexp-in-string "\n\n$" "\n" (concat s "\n")))
 
-(defun tslime-paste-buffer-to-tmux-panel (buffer panel fn-shell)
+(defun tslime-paste-buffer-to-tmux-panel (fn-shell buffer panel)
   (funcall fn-shell (tslime-str-join " " (list "tmux -L default load-buffer" buffer)))
   (funcall fn-shell (tslime-str-join " " (list "tmux -L default paste-buffer -d -t" panel))))
 
-(defun tslime-send-string-to-tmux-panel (s panel)
+(defun tslime-send-string-to-tmux-panel (s conf)
   (let ((s (tslime-append-newline-if-missing s)))
-    (with-temp-file tslime-buffer (insert s))
-    (tslime-paste-buffer-to-tmux-panel tslime-buffer panel 'shell-command)))
+    (with-temp-file (cdr (assoc 'buffer conf)) (insert s))
+    (apply 'tslime-paste-buffer-to-tmux-panel (cons 'shell-command (mapcar 'cdr conf)))))
+
+(defun tslime-prompt-for-tmux-configuration ()
+  (list (cons 'buffer (make-temp-file "tslime-tmux"))
+        (cons 'panel (read-string "Type panel id: " "{last}"))))
 
 (defun tslime-send-string-tmux (s)
-  (unless tslime-buffer
-    (setq tslime-buffer (make-temp-file "tslime")))
-  (unless tslime-panel
-    (setq tslime-panel (read-string "tmux target panel: " "{last}")))
-  (tslime-send-string-to-tmux-panel s tslime-panel))
+  (unless tslime-tmux-configuration
+    (setq tslime-tmux-configuration (tslime-prompt-for-tmux-configuration)))
+  (tslime-send-string-to-tmux-panel s tslime-tmux-configuration))
 
-(defun tslime-paste-buffer-to-screen-panel (fn-shell buffer session window)
+(defun tslime-paste-buffer-to-screen-panel (fn-shell buffer session region)
   (funcall fn-shell (tslime-str-join " " (list "screen -S" session "-X eval" (concat "'readreg p " buffer "'"))))
-  (funcall fn-shell (tslime-str-join " " (list "screen -S" session "-p" window "-X paste p"))))
+  (funcall fn-shell (tslime-str-join " " (list "screen -S" session "-p" region "-X paste p"))))
 
 (defun tslime-send-string-to-screen-panel (s conf)
   (let ((s (tslime-append-newline-if-missing s)))
@@ -46,9 +48,9 @@
     (if sessions (completing-read "Choose session: " sessions) (user-error "No screen session found"))))
 
 (defun tslime-prompt-for-screen-configuration ()
-  `((buffer  . ,(make-temp-file "tslime"))
-    (session . ,(tslime-prompt-for-screen-session))
-    (window  . ,(read-string "Type window id: "))))
+  (list (cons 'buffer (make-temp-file "tslime-screen"))
+        (cons 'session (tslime-prompt-for-screen-session))
+        (cons 'region (read-string "Type region id: "))))
 
 (defun tslime-send-string-screen (s)
   (unless tslime-screen-configuration

@@ -18,15 +18,15 @@
 (ert-deftest tslime-paste-buffer-to-tmux-panel-test ()
   (let ((result '())
         (fn-shell-command (lambda (x) (push x result))))
-    (tslime-paste-buffer-to-tmux-panel "buffer" "panel" fn-shell-command)
+    (tslime-paste-buffer-to-tmux-panel fn-shell-command "buffer" "panel")
     (should (equal "tmux -L default paste-buffer -d -t panel" (car result)))
     (should (equal "tmux -L default load-buffer buffer" (cadr result)))))
 
 (ert-deftest tslime-paste-buffer-to-screen-panel-test ()
   (let ((result '())
         (fn-shell-command (lambda (x) (push x result))))
-    (tslime-paste-buffer-to-screen-panel fn-shell-command "buffer" "session" "window")
-    (should (equal "screen -S session -p window -X paste p" (car result)))
+    (tslime-paste-buffer-to-screen-panel fn-shell-command "buffer" "session" "region")
+    (should (equal "screen -S session -p region -X paste p" (car result)))
     (should (equal "screen -S session -X eval 'readreg p buffer'" (cadr result)))))
 
 (ert-deftest tslime-parse-screen-session-list-test ()

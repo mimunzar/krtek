@@ -2,8 +2,16 @@ terminal-slime
 --------------
 
 Is the port of vim-slime into Emacs. It allows to send a text from Emacs to Tmux
-and GNU  Screen panels. It is  especially handy when sending  commands to remote
-terminals with a lot of lag. It can also be used to send text to REPL.
+and GNU Screen panels. It is handy for sending commands to remote terminals with
+a lot of lag. It can also be  used to send text for evaluation to panels running
+a REPL or in general to any program which accepts the input from STDIN.
 
-When using  GNU Screen you  can set msgwait  to 0 in  .screenrc to not  wait for
-messages to disappear before sending the text.
+The program defines a  keybinding 'C-c C-c'. When pressed for  the first time it
+prompts the  user to identify the  panel to send  the text to. The  program then
+remembers the panel  and doesn't ask the  user anymore. The user  can change the
+panel to send the test to by pressing 'C-c C-v'.
+
+When using  GNU Screen the user  is informed with  a message in the  status line
+about  commands  issued  by  terminal-slime.  The  messages  block  the  program
+execution and for a better user experience it  is advised to set msgwait to 0 in
+a screen's configuration file.

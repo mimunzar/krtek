@@ -17,9 +17,8 @@
   (funcall fn-shell (tslime-str-join " " (list "tmux -L default paste-buffer -d -t" panel))))
 
 (defun tslime-send-string-to-tmux-panel (s conf)
-  (let ((s (tslime-append-newline-if-missing s)))
-    (with-temp-file (cdr (assoc 'buffer conf)) (insert s))
-    (apply 'tslime-paste-buffer-to-tmux-panel (cons 'shell-command (mapcar 'cdr conf)))))
+  (with-temp-file (cdr (assoc 'buffer conf)) (insert s))
+  (apply 'tslime-paste-buffer-to-tmux-panel (cons 'shell-command (mapcar 'cdr conf))))
 
 (defun tslime-prompt-for-tmux-configuration ()
   (list (cons 'buffer (make-temp-file "tslime-tmux"))
@@ -35,9 +34,8 @@
   (funcall fn-shell (tslime-str-join " " (list "screen -S" session "-p" region "-X paste p"))))
 
 (defun tslime-send-string-to-screen-panel (s conf)
-  (let ((s (tslime-append-newline-if-missing s)))
-    (with-temp-file (cdr (assoc 'buffer conf)) (insert s))
-    (apply 'tslime-paste-buffer-to-screen-panel (cons 'shell-command (mapcar 'cdr conf)))))
+  (with-temp-file (cdr (assoc 'buffer conf)) (insert s))
+  (apply 'tslime-paste-buffer-to-screen-panel (cons 'shell-command (mapcar 'cdr conf))))
 
 (defun tslime-parse-screen-session-list (s)
   (mapcan (lambda (x) (unless (null x) (list x)))
@@ -65,7 +63,7 @@
 
 (defun tslime-send-region ()
   (let ((s (buffer-substring-no-properties (region-beginning) (region-end))))
-    (tslime-send-string-dispatch s)))
+    (tslime-send-string-dispatch (tslime-append-newline-if-missing s))))
 
 (defun tslime-send ()
   (interactive)

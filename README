@@ -24,8 +24,8 @@ To set it back to Tmux a 'tmux argument must be used. To change the key bindings
 a user can  set keys for 'tslime-send ('C-c C-c')  and 'tslime-send-forget ('C-c
 C-v') functions:
 
-          (global-set-key (kbd "C-c C-c") 'tslime-send)
-          (global-set-key (kbd "C-c C-v") 'tslime-forget-send)
+          (global-set-key (kbd "C-c C-c") #'tslime-send)
+          (global-set-key (kbd "C-c C-v") #'tslime-forget-send)
 
 When using  GNU Screen the user  is informed with  a message in the  status line
 about  commands  issued  by  terminal-slime.  The  messages  block  the  program

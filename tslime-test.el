@@ -41,7 +41,7 @@
 
 (ert-deftest tslime-make-send-multiplexer-test ()
   (let* ((prompted-times 0)
-         (f-prompt-conf (lambda () (setq prompted-times (+ prompted-times 1)) "conf"))
+         (f-prompt-conf (lambda () (setq prompted-times (1+ prompted-times)) "conf"))
          (f-multiplexer-send (lambda (s conf) (list s conf)))
          (f-send-multiplexer (tslime-make-send-multiplexer f-prompt-conf f-multiplexer-send)))
     (should (equal '("foo" "conf") (funcall f-send-multiplexer "foo")))

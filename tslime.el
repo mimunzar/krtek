@@ -17,7 +17,7 @@
 
 (defun tslime-send-to-tmux-panel (s conf)
   (with-temp-file (cdr (assoc 'buffer conf)) (insert s))
-  (apply 'tslime-paste-buffer-to-tmux-panel (cons 'shell-command (mapcar 'cdr conf))))
+  (apply #'tslime-paste-buffer-to-tmux-panel (cons 'shell-command (mapcar 'cdr conf))))
 
 (defun tslime-prompt-for-tmux-conf ()
   (list (cons 'buffer (make-temp-file "tslime-tmux"))
@@ -29,7 +29,7 @@
 
 (defun tslime-send-to-screen-panel (s conf)
   (with-temp-file (cdr (assoc 'buffer conf)) (insert s))
-  (apply 'tslime-paste-buffer-to-screen-panel (cons 'shell-command (mapcar 'cdr conf))))
+  (apply #'tslime-paste-buffer-to-screen-panel (cons 'shell-command (mapcar 'cdr conf))))
 
 (defun tslime-parse-screen-session-list (s)
   (mapcan (lambda (x) (when x (list x)))
@@ -66,7 +66,7 @@
 
 (defun tslime-send-region (multiplexer &optional forget)
   (let ((s (buffer-substring-no-properties (region-beginning) (region-end))))
-    (funcall tslime-send-dispatch multiplexer (tslime-append-newline-if-missing s) forget)))
+    (funcall #'tslime-send-dispatch multiplexer (tslime-append-newline-if-missing s) forget)))
 
 (defun tslime-send (&optional forget)
   (interactive)
@@ -82,6 +82,6 @@
   (tslime-send 'forget))
 
 (global-set-key (kbd "C-c C-c") #'tslime-send)
-(global-set-key (kbd "C-c C-v") #'tslime-forget-send)
+(global-set-key (kbd "C-c C-f") #'tslime-forget-send)
 
 (provide 'tslime)

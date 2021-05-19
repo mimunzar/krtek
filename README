@@ -9,7 +9,7 @@ a REPL or in general to any program which accepts input on STDIN.
 The program defines a  keybinding 'C-c C-c'. When pressed for  the first time it
 prompts a  user to  identify the  panel to send  the text  to. The  program then
 remembers the panel  and doesn't ask the  user anymore. The user  can change the
-panel to send text to by pressing 'C-c C-v'.
+panel to send text to by pressing 'C-c C-f'.
 
 A user  can specify a  region before sending  it to a  panel. When no  region is
 selected a paragraph under a current point is selected as the region to send.
@@ -22,10 +22,10 @@ to GNU Screen type:
 
 To set it back to Tmux a 'tmux argument must be used. To change the key bindings
 a user can  set keys for 'tslime-send ('C-c C-c')  and 'tslime-send-forget ('C-c
-C-v') functions:
+C-f') functions:
 
           (global-set-key (kbd "C-c C-c") #'tslime-send)
-          (global-set-key (kbd "C-c C-v") #'tslime-forget-send)
+          (global-set-key (kbd "C-c C-f") #'tslime-forget-send)
 
 When using  GNU Screen the user  is informed with  a message in the  status line
 about  commands  issued  by  terminal-slime.  The  messages  block  the  program

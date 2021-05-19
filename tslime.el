@@ -66,13 +66,12 @@
 
 (defun tslime-send-region (multiplexer &optional forget)
   (let ((s (buffer-substring-no-properties (region-beginning) (region-end))))
-    (funcall #'tslime-send-dispatch multiplexer (tslime-append-newline-if-missing s) forget)))
+    (funcall tslime-send-dispatch multiplexer (tslime-append-newline-if-missing s) forget)))
 
 (defun tslime-send (&optional forget)
   (interactive)
   (let ((pos (point)))
-    (unless (use-region-p)
-      (mark-paragraph))
+    (unless (use-region-p) (mark-paragraph))
     (tslime-send-region tslime-multiplexer forget)
     (deactivate-mark)
     (goto-char pos)))

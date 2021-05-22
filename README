@@ -11,10 +11,10 @@ multiplexer which accepts input on STDIN.
 Installation
 ------------
 
-Clone the repository and make a symlink to tslime.el available from your emacs.d
-directory:
+Clone the repository and make a symlink to tslime.el available somewhere on your
+load path:
 
-      ln -sf ~/Projects/terminal-slime/tslime.el ~/.emacs.d/
+      ln -sf ~/Projects/terminal-slime/tslime.el ~/.emacs.d/lisp
 
 This  assumes  that the  repository  was  cloned into  ~/Projects/terminal-slime
 directory. Then  require the file  from your init.el and  you should be  able to

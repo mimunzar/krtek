@@ -2,7 +2,7 @@
 (defvar tslime-multiplexer 'tmux)
 
 (defun tslime-s-join (separator seq)
-  (mapconcat 'identity seq separator))
+  (mapconcat #'identity seq separator))
 
 (defun tslime-re-matches (re s)
   (let ((start (string-match re s)))
@@ -17,7 +17,7 @@
 
 (defun tslime-send-to-tmux-panel (s conf)
   (with-temp-file (cdr (assoc 'buffer conf)) (insert s))
-  (apply #'tslime-paste-buffer-to-tmux-panel (cons 'shell-command (mapcar 'cdr conf))))
+  (apply #'tslime-paste-buffer-to-tmux-panel (cons #'shell-command (mapcar #'cdr conf))))
 
 (defun tslime-prompt-for-tmux-conf ()
   (list (cons 'buffer (make-temp-file "tslime-tmux"))
@@ -29,7 +29,7 @@
 
 (defun tslime-send-to-screen-panel (s conf)
   (with-temp-file (cdr (assoc 'buffer conf)) (insert s))
-  (apply #'tslime-paste-buffer-to-screen-panel (cons 'shell-command (mapcar 'cdr conf))))
+  (apply #'tslime-paste-buffer-to-screen-panel (cons #'shell-command (mapcar #'cdr conf))))
 
 (defun tslime-parse-screen-session-list (s)
   (mapcan (lambda (x) (when x (list x)))
